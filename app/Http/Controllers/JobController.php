@@ -60,7 +60,9 @@ class JobController extends Controller
 
     public function edit(Job $job)
     {
-        $this->authorize('update', $job);
+        if ($job->user_id != auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('jobs.edit', [
             'job' => $job
@@ -70,7 +72,9 @@ class JobController extends Controller
 
     public function update(Request $request, Job $job)
     {
-        $this->authorize('update', $job);
+        if ($job->user_id != auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $formFields = $request->validate([
             'title' => 'required',
@@ -95,8 +99,10 @@ class JobController extends Controller
 
     public function destroy(Job $job)
     {
-        $this->authorize('delete', $job);
-        
+        if ($job->user_id != auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $job->delete();
         return redirect('/')->with('success', 'Job deleted successfully!');
     }
